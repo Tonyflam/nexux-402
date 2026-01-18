@@ -1,6 +1,5 @@
 'use client';
 
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -10,9 +9,9 @@ import {
   CreditCard, 
   Store, 
   BarChart3, 
-  Settings,
   Menu,
-  X
+  X,
+  Wallet
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -68,11 +67,10 @@ export function Header() {
 
           {/* Right side */}
           <div className="flex items-center gap-4">
-            <ConnectButton 
-              showBalance={false}
-              chainStatus="icon"
-              accountStatus="address"
-            />
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cronos-light to-primary-600 hover:opacity-90 transition-opacity">
+              <Wallet className="w-4 h-4" />
+              <span className="text-sm font-medium">Connect Wallet</span>
+            </button>
             
             {/* Mobile menu button */}
             <button
