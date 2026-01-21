@@ -1,83 +1,45 @@
 'use client';
 
 import { Header } from '@/components/Header';
-import { StatCard, AgentCard, WorkflowCard } from '@/components/Cards';
-import { Bot, Workflow, CreditCard, TrendingUp, ArrowRight, Zap, Shield, Globe } from 'lucide-react';
+import { StatCard } from '@/components/Cards';
+import { 
+  LiveTicker, 
+  DeploymentProof, 
+  LiveActivityFeed, 
+  EconomicMetrics 
+} from '@/components/LiveDashboard';
+import { Bot, Workflow, CreditCard, TrendingUp, ArrowRight, Zap, Shield, Globe, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-
-interface OverviewStats {
-  totalAgents: number;
-  activeAgents: number;
-  totalWorkflows: number;
-  activeWorkflows: number;
-  totalPayments: number;
-  totalVolume: string;
-  successRate: string;
-}
-
-interface Agent {
-  id: string;
-  name: string;
-  description?: string;
-  capabilities: string[];
-  pricePerCall: string;
-  rating: number;
-  totalCalls: number;
-  isActive: boolean;
-}
-
-interface Workflow {
-  id: string;
-  name: string;
-  description?: string;
-  steps: any[];
-  totalExecutions: number;
-  successfulExecutions: number;
-  isActive: boolean;
-}
+import { useProtocolStats, useBlockNumber, useWallet, useAgents } from '@/lib/hooks';
+import { CONTRACTS, CRONOS_EXPLORER } from '@/lib/contracts';
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<OverviewStats | null>(null);
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [overviewRes, agentsRes, workflowsRes] = await Promise.all([
-          fetch('/api/analytics/overview'),
-          fetch('/api/agents?limit=4'),
-          fetch('/api/workflows?limit=4')
-        ]);
-
-        const overview = await overviewRes.json();
-        const agentsData = await agentsRes.json();
-        const workflowsData = await workflowsRes.json();
-
-        setStats(overview.stats);
-        setAgents(agentsData.agents || []);
-        setWorkflows(workflowsData.workflows || []);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  // Real blockchain data hooks
+  const protocolStats = useProtocolStats();
+  const blockNumber = useBlockNumber();
+  const { address, isConnected } = useWallet();
+  const { agents, loading } = useAgents();
 
   return (
     <div className="min-h-screen">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* LIVE TICKER - Shows this is REAL and DEPLOYED */}
+        <LiveTicker />
+
         {/* Hero Section */}
         <div className="glass rounded-2xl p-8 mb-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-cronos-light/20 to-primary-600/20" />
           <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm font-medium border border-green-500/30">
+                ✓ Deployed on Cronos Testnet
+              </span>
+              <span className="px-3 py-1 rounded-full bg-cronos/20 text-cronos-light text-sm font-medium border border-cronos/30">
+                Block #{blockNumber.toLocaleString()}
+              </span>
+            </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Welcome to <span className="gradient-text">NEXUS-402</span>
             </h1>
@@ -89,11 +51,28 @@ export default function Dashboard() {
               <Link href="/agents" className="btn-primary flex items-center gap-2">
                 Explore Agents <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link href="/workflows" className="btn-secondary flex items-center gap-2">
-                Create Workflow <Zap className="w-4 h-4" />
+              <Link href="/payments" className="btn-secondary flex items-center gap-2">
+                Try x402 Payment <Zap className="w-4 h-4" />
               </Link>
+              <a 
+                href={`${CRONOS_EXPLORER}/address/${CONTRACTS.NEXUS_REGISTRY}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary flex items-center gap-2"
+              >
+                View on Explorer <ExternalLink className="w-4 h-4" />
+              </a>
             </div>
           </div>
+        </div>
+
+        {/* LIVE Economic Metrics - REAL BLOCKCHAIN DATA */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            Live Protocol Metrics
+          </h2>
+          <EconomicMetrics />
         </div>
 
         {/* Features Grid */}
@@ -127,35 +106,41 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Stats Grid */}
+        {/* Two Column Layout - Activity + Deployment Proof */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <LiveActivityFeed />
+          <DeploymentProof />
+        </div>
+
+        {/* Stats Grid - Using REAL blockchain data */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Total Agents"
-            value={loading ? '...' : stats?.totalAgents || 0}
-            change={`${stats?.activeAgents || 0} active`}
+            value={protocolStats.totalAgents}
+            change="On-chain verified"
             changeType="positive"
             icon={<Bot className="w-6 h-6 text-cronos-light" />}
           />
           <StatCard
-            title="Workflows"
-            value={loading ? '...' : stats?.totalWorkflows || 0}
-            change={`${stats?.activeWorkflows || 0} active`}
+            title="API Calls"
+            value={protocolStats.totalCalls}
+            change="Protocol calls"
             changeType="positive"
-            icon={<Workflow className="w-6 h-6 text-purple-400" />}
+            icon={<Zap className="w-6 h-6 text-yellow-400" />}
           />
           <StatCard
-            title="Total Payments"
-            value={loading ? '...' : stats?.totalPayments?.toLocaleString() || 0}
-            change={`${stats?.successRate || 0}% success rate`}
+            title="Total Volume"
+            value={`$${protocolStats.totalVolume}`}
+            change="USDC processed"
             changeType="positive"
             icon={<CreditCard className="w-6 h-6 text-green-400" />}
           />
           <StatCard
-            title="Total Volume"
-            value={loading ? '...' : `$${stats?.totalVolume || '0'}`}
-            change="USDC on Cronos"
+            title="Block Height"
+            value={blockNumber.toLocaleString()}
+            change="Cronos Testnet"
             changeType="neutral"
-            icon={<TrendingUp className="w-6 h-6 text-yellow-400" />}
+            icon={<TrendingUp className="w-6 h-6 text-purple-400" />}
           />
         </div>
 
@@ -163,8 +148,8 @@ export default function Dashboard() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold">Top Agents</h2>
-              <p className="text-white/60">Discover high-performing AI agents</p>
+              <h2 className="text-2xl font-bold">Registered Agents</h2>
+              <p className="text-white/60">Live from NexusRegistry contract</p>
             </div>
             <Link href="/agents" className="text-cronos-light hover:underline flex items-center gap-1">
               View All <ArrowRight className="w-4 h-4" />
@@ -172,7 +157,7 @@ export default function Dashboard() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
-              Array(4).fill(0).map((_, i) => (
+              Array(2).fill(0).map((_, i) => (
                 <div key={i} className="glass rounded-xl p-6 animate-pulse">
                   <div className="w-12 h-12 rounded-lg bg-white/10 mb-4" />
                   <div className="h-6 bg-white/10 rounded mb-2 w-3/4" />
@@ -181,8 +166,24 @@ export default function Dashboard() {
                 </div>
               ))
             ) : agents.length > 0 ? (
-              agents.map((agent) => (
-                <AgentCard key={agent.id} agent={agent} />
+              agents.map((agent, index) => (
+                <div key={index} className="glass rounded-xl p-6 card-hover">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-cronos-light/20 flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-cronos-light" />
+                    </div>
+                    <span className="text-cronos-light font-bold">${agent.price}/call</span>
+                  </div>
+                  <h3 className="font-semibold mb-1">{agent.name}</h3>
+                  <p className="text-sm text-white/60 mb-3 line-clamp-2">{agent.description}</p>
+                  <div className="flex flex-wrap gap-1">
+                    {agent.capabilities.slice(0, 3).map((cap: string) => (
+                      <span key={cap} className="text-xs bg-cronos-light/20 text-cronos-light px-2 py-0.5 rounded">
+                        {cap}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               ))
             ) : (
               <div className="col-span-4 glass rounded-xl p-12 text-center">
@@ -196,40 +197,42 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Workflows Section */}
+        {/* Quick Actions Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold">Recent Workflows</h2>
-              <p className="text-white/60">Automated multi-step processes</p>
+              <h2 className="text-2xl font-bold">Quick Actions</h2>
+              <p className="text-white/60">Get started with NEXUS-402</p>
             </div>
-            <Link href="/workflows" className="text-cronos-light hover:underline flex items-center gap-1">
-              View All <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {loading ? (
-              Array(4).fill(0).map((_, i) => (
-                <div key={i} className="glass rounded-xl p-6 animate-pulse">
-                  <div className="w-12 h-12 rounded-lg bg-white/10 mb-4" />
-                  <div className="h-6 bg-white/10 rounded mb-2 w-3/4" />
-                  <div className="h-4 bg-white/10 rounded w-full mb-4" />
-                  <div className="h-8 bg-white/10 rounded" />
-                </div>
-              ))
-            ) : workflows.length > 0 ? (
-              workflows.map((workflow) => (
-                <WorkflowCard key={workflow.id} workflow={workflow} />
-              ))
-            ) : (
-              <div className="col-span-4 glass rounded-xl p-12 text-center">
-                <Workflow className="w-12 h-12 mx-auto mb-4 text-white/40" />
-                <p className="text-white/60">No workflows created yet</p>
-                <Link href="/workflows/create" className="btn-primary mt-4 inline-block">
-                  Create First Workflow
-                </Link>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link href="/x402-demo" className="glass rounded-xl p-6 card-hover border border-cronos-light/30 hover:border-cronos-light">
+              <div className="w-12 h-12 rounded-lg bg-cronos-light/20 flex items-center justify-center mb-4">
+                <CreditCard className="w-6 h-6 text-cronos-light" />
               </div>
-            )}
+              <h3 className="text-lg font-semibold mb-2">Try x402 Payment</h3>
+              <p className="text-sm text-white/60">
+                Experience gasless USDC payments on Cronos
+              </p>
+            </Link>
+            <Link href="/agents/register" className="glass rounded-xl p-6 card-hover border border-purple-500/30 hover:border-purple-500">
+              <div className="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center mb-4">
+                <Bot className="w-6 h-6 text-purple-400" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Register Agent</h3>
+              <p className="text-sm text-white/60">
+                List your AI agent on the blockchain
+              </p>
+            </Link>
+            <Link href="/workflows" className="glass rounded-xl p-6 card-hover border border-green-500/30 hover:border-green-500">
+              <div className="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center mb-4">
+                <Workflow className="w-6 h-6 text-green-400" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Explore Workflows</h3>
+              <p className="text-sm text-white/60">
+                See how to automate agent processes
+              </p>
+            </Link>
           </div>
         </div>
 

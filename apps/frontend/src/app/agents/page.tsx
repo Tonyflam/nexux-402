@@ -2,21 +2,11 @@
 
 import { Header } from '@/components/Header';
 import { AgentCard, StatCard } from '@/components/Cards';
-import { Bot, Search, Filter, Plus, ArrowRight } from 'lucide-react';
+import { Bot, Search, Filter, Plus, ArrowRight, ExternalLink, Radio } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-
-interface Agent {
-  id: string;
-  name: string;
-  description?: string;
-  capabilities: string[];
-  pricePerCall: string;
-  rating: number;
-  totalCalls: number;
-  isActive: boolean;
-  owner: string;
-}
+import { useState } from 'react';
+import { useAgents, useProtocolStats } from '@/lib/hooks';
+import { CONTRACTS, CRONOS_EXPLORER } from '@/lib/contracts';
 
 const CAPABILITIES = [
   'defi', 'payments', 'analytics', 'trading', 
@@ -24,38 +14,30 @@ const CAPABILITIES = [
 ];
 
 export default function AgentsPage() {
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Use blockchain data hook
+  const { agents, loading } = useAgents();
+  const protocolStats = useProtocolStats();
+  
   const [search, setSearch] = useState('');
   const [capability, setCapability] = useState('');
   const [sort, setSort] = useState('rating');
 
-  useEffect(() => {
-    const fetchAgents = async () => {
-      try {
-        const params = new URLSearchParams();
-        if (capability) params.set('capability', capability);
-        if (sort) params.set('sort', sort);
-        params.set('limit', '20');
-
-        const res = await fetch(`/api/agents?${params}`);
-        const data = await res.json();
-        setAgents(data.agents || []);
-      } catch (error) {
-        console.error('Failed to fetch agents:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAgents();
-  }, [capability, sort]);
-
   const filteredAgents = agents.filter(agent => 
-    search === '' || 
-    agent.name.toLowerCase().includes(search.toLowerCase()) ||
-    agent.description?.toLowerCase().includes(search.toLowerCase())
+    (search === '' || 
+      agent.name.toLowerCase().includes(search.toLowerCase()) ||
+      agent.description?.toLowerCase().includes(search.toLowerCase())) &&
+    (capability === '' || agent.capabilities?.includes(capability))
   );
+
+  // Sort agents
+  const sortedAgents = [...filteredAgents].sort((a, b) => {
+    switch (sort) {
+      case 'calls': return b.totalCalls - a.totalCalls;
+      case 'rating': return b.rating - a.rating;
+      case 'newest': return parseInt(b.id) - parseInt(a.id);
+      default: return 0;
+    }
+  });
 
   const totalCalls = agents.reduce((sum, a) => sum + a.totalCalls, 0);
   const avgRating = agents.length > 0 
@@ -67,11 +49,35 @@ export default function AgentsPage() {
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Live Data Banner */}
+        <div className="bg-gradient-to-r from-green-900/20 via-cronos/20 to-blue-900/20 border border-cronos/30 rounded-xl p-4 mb-8">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Radio className="w-5 h-5 text-green-400" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-ping" />
+              </div>
+              <span className="text-green-400 font-bold text-sm">LIVE FROM BLOCKCHAIN</span>
+            </div>
+            <a 
+              href={`${CRONOS_EXPLORER}/address/${CONTRACTS.NEXUS_REGISTRY}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs text-cronos-light hover:text-white transition-colors"
+            >
+              <span>NexusRegistry Contract</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        </div>
+
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold">AI Agents</h1>
-            <p className="text-white/60">Discover and connect with specialized AI agents</p>
+            <p className="text-white/60">
+              {protocolStats.totalAgents} agents registered on-chain
+            </p>
           </div>
           <Link href="/agents/register" className="btn-primary flex items-center gap-2 w-fit">
             <Plus className="w-4 h-4" /> Register Agent
@@ -156,8 +162,8 @@ export default function AgentsPage() {
                 <div className="h-8 bg-white/10 rounded" />
               </div>
             ))
-          ) : filteredAgents.length > 0 ? (
-            filteredAgents.map((agent) => (
+          ) : sortedAgents.length > 0 ? (
+            sortedAgents.map((agent) => (
               <AgentCard 
                 key={agent.id} 
                 agent={agent} 
@@ -171,7 +177,7 @@ export default function AgentsPage() {
               <p className="text-white/60 mb-6">
                 {search || capability 
                   ? 'Try adjusting your filters'
-                  : 'Be the first to register an agent!'
+                  : 'Be the first to register an agent on-chain!'
                 }
               </p>
               <Link href="/agents/register" className="btn-primary inline-flex items-center gap-2">

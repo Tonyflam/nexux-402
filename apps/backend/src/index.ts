@@ -9,6 +9,7 @@ import { workflowRoutes } from './routes/workflows.js';
 import { paymentRoutes } from './routes/payments.js';
 import { marketplaceRoutes } from './routes/marketplace.js';
 import { analyticsRoutes } from './routes/analytics.js';
+import { marketRoutes } from './routes/market.js';
 import { x402Middleware } from './middleware/x402.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -47,7 +48,12 @@ app.get('/api', (req, res) => {
       workflows: '/api/workflows',
       payments: '/api/payments',
       marketplace: '/api/marketplace',
-      analytics: '/api/analytics'
+      analytics: '/api/analytics',
+      market: '/api/market'
+    },
+    integrations: {
+      cryptoComMarketData: 'Crypto.com Exchange API',
+      aiAgentSDK: 'NEXUS-402 AI Agent SDK'
     },
     x402: {
       facilitator: process.env.FACILITATOR_URL,
@@ -63,6 +69,7 @@ app.use('/api/workflows', workflowRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/market', marketRoutes);
 
 // x402 Protected routes (require payment)
 app.use('/api/premium', x402Middleware, (req, res) => {

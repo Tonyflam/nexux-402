@@ -11,12 +11,16 @@ import {
   BarChart3, 
   Menu,
   X,
-  Wallet
+  Wallet,
+  Zap
 } from 'lucide-react';
 import { useState } from 'react';
+import { useWallet } from '@/lib/hooks';
+import { formatAddress } from '@/lib/contracts';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'x402 Demo', href: '/x402-demo', icon: Zap, highlight: true },
   { name: 'Agents', href: '/agents', icon: Bot },
   { name: 'Workflows', href: '/workflows', icon: Workflow },
   { name: 'Payments', href: '/payments', icon: CreditCard },
@@ -27,6 +31,7 @@ const navigation = [
 export function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { address, isConnected, connect, disconnect } = useWallet();
 
   return (
     <header className="sticky top-0 z-50 glass border-b border-white/10">
@@ -55,6 +60,8 @@ export function Header() {
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive 
                       ? 'bg-white/10 text-white' 
+                      : item.highlight
+                      ? 'text-cronos-light hover:text-white hover:bg-cronos-light/10 border border-cronos-light/30'
                       : 'text-white/60 hover:text-white hover:bg-white/5'
                   }`}
                 >
@@ -65,12 +72,25 @@ export function Header() {
             })}
           </nav>
 
-          {/* Right side */}
+          {/* Right side - Wallet Connect */}
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cronos-light to-primary-600 hover:opacity-90 transition-opacity">
-              <Wallet className="w-4 h-4" />
-              <span className="text-sm font-medium">Connect Wallet</span>
-            </button>
+            {isConnected && address ? (
+              <button 
+                onClick={disconnect}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              >
+                <div className="w-2 h-2 bg-green-400 rounded-full" />
+                <span className="text-sm font-medium">{formatAddress(address)}</span>
+              </button>
+            ) : (
+              <button 
+                onClick={connect}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cronos-light to-primary-600 hover:opacity-90 transition-opacity"
+              >
+                <Wallet className="w-4 h-4" />
+                <span className="text-sm font-medium">Connect Wallet</span>
+              </button>
+            )}
             
             {/* Mobile menu button */}
             <button

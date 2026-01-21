@@ -1,52 +1,14 @@
 'use client';
 
 import { Header } from '@/components/Header';
-import { WorkflowCard, StatCard } from '@/components/Cards';
-import { Workflow, Search, Plus, Play, ArrowRight, Zap } from 'lucide-react';
+import { StatCard } from '@/components/Cards';
+import { Workflow, ExternalLink, Zap, GitBranch, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-
-interface WorkflowData {
-  id: string;
-  name: string;
-  description?: string;
-  steps: any[];
-  totalExecutions: number;
-  successfulExecutions: number;
-  isActive: boolean;
-  createdAt: string;
-}
+import { useProtocolStats } from '@/lib/hooks';
+import { CONTRACTS, CRONOS_TESTNET } from '@/lib/contracts';
 
 export default function WorkflowsPage() {
-  const [workflows, setWorkflows] = useState<WorkflowData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-
-  useEffect(() => {
-    const fetchWorkflows = async () => {
-      try {
-        const res = await fetch('/api/workflows?limit=20');
-        const data = await res.json();
-        setWorkflows(data.workflows || []);
-      } catch (error) {
-        console.error('Failed to fetch workflows:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWorkflows();
-  }, []);
-
-  const filteredWorkflows = workflows.filter(workflow => 
-    search === '' || 
-    workflow.name.toLowerCase().includes(search.toLowerCase()) ||
-    workflow.description?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const totalExecutions = workflows.reduce((sum, w) => sum + w.totalExecutions, 0);
-  const totalSuccess = workflows.reduce((sum, w) => sum + w.successfulExecutions, 0);
-  const avgSuccessRate = totalExecutions > 0 ? (totalSuccess / totalExecutions * 100) : 0;
+  const stats = useProtocolStats();
 
   return (
     <div className="min-h-screen">
@@ -56,128 +18,138 @@ export default function WorkflowsPage() {
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Workflows</h1>
+            <h1 className="text-3xl font-bold">Workflow Engine</h1>
             <p className="text-white/60">Automate multi-step AI agent processes</p>
           </div>
-          <Link href="/workflows/create" className="btn-primary flex items-center gap-2 w-fit">
-            <Plus className="w-4 h-4" /> Create Workflow
-          </Link>
         </div>
 
-        {/* Stats */}
+        {/* Live Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
           <StatCard
-            title="Total Workflows"
-            value={workflows.length}
-            change={`${workflows.filter(w => w.isActive).length} active`}
-            changeType="positive"
+            title="Available Agents"
+            value={stats.totalAgents.toString()}
             icon={<Workflow className="w-6 h-6 text-purple-400" />}
           />
           <StatCard
-            title="Total Executions"
-            value={totalExecutions.toLocaleString()}
-            description="All-time runs"
-            icon={<Play className="w-6 h-6 text-green-400" />}
+            title="Total Calls"
+            value={stats.totalCalls.toString()}
+            icon={<Zap className="w-6 h-6 text-yellow-400" />}
           />
           <StatCard
-            title="Success Rate"
-            value={`${avgSuccessRate.toFixed(1)}%`}
-            change={`${totalSuccess.toLocaleString()} successful`}
-            changeType="positive"
-            icon={<Zap className="w-6 h-6 text-yellow-400" />}
+            title="Current Block"
+            value={`#${stats.blockNumber.toLocaleString()}`}
+            icon={<GitBranch className="w-6 h-6 text-green-400" />}
           />
         </div>
 
-        {/* Search */}
-        <div className="glass rounded-xl p-4 mb-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-            <input
-              type="text"
-              placeholder="Search workflows..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-cronos-light"
-            />
+        {/* Deployed Contract */}
+        <div className="glass rounded-xl p-6 mb-8">
+          <h2 className="text-lg font-semibold mb-4">Workflow Engine Contract</h2>
+          <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+            <div>
+              <p className="text-sm text-white/60">WorkflowEngine.sol</p>
+              <code className="text-cronos-light text-sm font-mono">
+                {CONTRACTS.WORKFLOW_ENGINE}
+              </code>
+            </div>
+            <a 
+              href={`${CRONOS_TESTNET.blockExplorer}/address/${CONTRACTS.WORKFLOW_ENGINE}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-cronos-light hover:underline"
+            >
+              View on Explorer <ExternalLink className="w-4 h-4" />
+            </a>
           </div>
         </div>
 
         {/* Workflow Templates */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Workflow Templates</h2>
+        <div className="glass rounded-xl p-6 mb-8">
+          <h2 className="text-lg font-semibold mb-4">Workflow Capabilities</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="glass rounded-xl p-6 card-hover cursor-pointer border border-dashed border-white/20">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4">
-                <span className="text-2xl">📊</span>
+            <div className="p-4 rounded-lg bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+              <div className="w-10 h-10 rounded-lg bg-blue-500/30 flex items-center justify-center mb-3">
+                <span className="text-xl">📊</span>
               </div>
-              <h3 className="font-semibold mb-2">DeFi Analytics</h3>
-              <p className="text-sm text-white/60 mb-4">
-                Fetch market data → Analyze trends → Generate report
+              <h3 className="font-semibold mb-1">Sequential Steps</h3>
+              <p className="text-sm text-white/60">
+                Chain multiple agent calls in order, passing data between steps
               </p>
-              <button className="text-sm text-cronos-light hover:underline">
-                Use Template →
-              </button>
+              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded mt-2 inline-block">
+                Contract Ready
+              </span>
             </div>
-            <div className="glass rounded-xl p-6 card-hover cursor-pointer border border-dashed border-white/20">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4">
-                <span className="text-2xl">💸</span>
+            <div className="p-4 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30">
+              <div className="w-10 h-10 rounded-lg bg-purple-500/30 flex items-center justify-center mb-3">
+                <span className="text-xl">🔀</span>
               </div>
-              <h3 className="font-semibold mb-2">Payment Automation</h3>
-              <p className="text-sm text-white/60 mb-4">
-                Verify conditions → Process payment → Send notification
+              <h3 className="font-semibold mb-1">Conditional Logic</h3>
+              <p className="text-sm text-white/60">
+                Branch workflows based on agent outputs and conditions
               </p>
-              <button className="text-sm text-cronos-light hover:underline">
-                Use Template →
-              </button>
+              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded mt-2 inline-block">
+                Contract Ready
+              </span>
             </div>
-            <div className="glass rounded-xl p-6 card-hover cursor-pointer border border-dashed border-white/20">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4">
-                <span className="text-2xl">🤖</span>
+            <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30">
+              <div className="w-10 h-10 rounded-lg bg-green-500/30 flex items-center justify-center mb-3">
+                <span className="text-xl">💸</span>
               </div>
-              <h3 className="font-semibold mb-2">Multi-Agent Task</h3>
-              <p className="text-sm text-white/60 mb-4">
-                Research agent → Analysis agent → Action agent
+              <h3 className="font-semibold mb-1">Aggregated Payments</h3>
+              <p className="text-sm text-white/60">
+                Single x402 payment covers all agents in the workflow
               </p>
-              <button className="text-sm text-cronos-light hover:underline">
-                Use Template →
-              </button>
+              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded mt-2 inline-block">
+                Contract Ready
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Workflows Grid */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Your Workflows</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {loading ? (
-              Array(6).fill(0).map((_, i) => (
-                <div key={i} className="glass rounded-xl p-6 animate-pulse">
-                  <div className="w-12 h-12 rounded-lg bg-white/10 mb-4" />
-                  <div className="h-6 bg-white/10 rounded mb-2 w-3/4" />
-                  <div className="h-4 bg-white/10 rounded w-full mb-4" />
-                  <div className="h-8 bg-white/10 rounded" />
-                </div>
-              ))
-            ) : filteredWorkflows.length > 0 ? (
-              filteredWorkflows.map((workflow) => (
-                <WorkflowCard 
-                  key={workflow.id} 
-                  workflow={workflow}
-                  onClick={() => window.location.href = `/workflows/${workflow.id}`}
-                />
-              ))
-            ) : (
-              <div className="col-span-3 glass rounded-xl p-12 text-center">
-                <Workflow className="w-16 h-16 mx-auto mb-4 text-white/40" />
-                <h3 className="text-xl font-semibold mb-2">No Workflows Yet</h3>
-                <p className="text-white/60 mb-6">
-                  Create your first workflow to automate AI agent tasks
-                </p>
-                <Link href="/workflows/create" className="btn-primary inline-flex items-center gap-2">
-                  <Plus className="w-4 h-4" /> Create Workflow
-                </Link>
-              </div>
-            )}
+        {/* Example Workflow */}
+        <div className="glass rounded-xl p-6 mb-8">
+          <h2 className="text-lg font-semibold mb-4">Example: DeFi Analytics Workflow</h2>
+          <div className="flex items-center gap-4 overflow-x-auto pb-4">
+            <div className="flex-shrink-0 p-4 bg-cronos-light/20 rounded-lg border border-cronos-light/30 min-w-[180px]">
+              <p className="text-xs text-white/60 mb-1">Step 1</p>
+              <p className="font-semibold">Price Oracle</p>
+              <p className="text-sm text-white/60">Fetch token prices</p>
+            </div>
+            <div className="flex-shrink-0 text-2xl text-white/40">→</div>
+            <div className="flex-shrink-0 p-4 bg-purple-500/20 rounded-lg border border-purple-500/30 min-w-[180px]">
+              <p className="text-xs text-white/60 mb-1">Step 2</p>
+              <p className="font-semibold">Sentiment Analysis</p>
+              <p className="text-sm text-white/60">Analyze market mood</p>
+            </div>
+            <div className="flex-shrink-0 text-2xl text-white/40">→</div>
+            <div className="flex-shrink-0 p-4 bg-green-500/20 rounded-lg border border-green-500/30 min-w-[180px]">
+              <p className="text-xs text-white/60 mb-1">Step 3</p>
+              <p className="font-semibold">Strategy Agent</p>
+              <p className="text-sm text-white/60">Generate advice</p>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="glass rounded-xl p-8 text-center">
+          <Workflow className="w-16 h-16 mx-auto mb-4 text-cronos-light" />
+          <h2 className="text-2xl font-bold mb-2">Build Your Workflow</h2>
+          <p className="text-white/60 mb-6 max-w-md mx-auto">
+            The WorkflowEngine smart contract is deployed and ready.
+            Combine registered agents to create powerful automations.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Link href="/agents" className="btn-primary inline-flex items-center gap-2">
+              Browse Agents
+            </Link>
+            <a 
+              href={`${CRONOS_TESTNET.blockExplorer}/address/${CONTRACTS.WORKFLOW_ENGINE}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors inline-flex items-center gap-2"
+            >
+              View Contract <ExternalLink className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </main>

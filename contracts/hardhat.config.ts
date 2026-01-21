@@ -24,8 +24,8 @@ const config: HardhatUserConfig = {
     "cronos-testnet": {
       url: "https://evm-t3.cronos.org",
       chainId: 338,
-      accounts: [PRIVATE_KEY],
-      gasPrice: 10000000000000 // 10000 Gwei for testnet
+      accounts: [PRIVATE_KEY]
+      // Let hardhat auto-estimate gas
     },
     "cronos-mainnet": {
       url: "https://evm.cronos.org",
