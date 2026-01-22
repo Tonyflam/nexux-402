@@ -477,7 +477,7 @@ main().catch(console.error);
 
 | Resource | Link |
 |----------|------|
-| **NEXUS-402 GitHub** | [github.com/Tonyflam/hk](https://github.com/Tonyflam/hk) |
+| **NEXUS-402 GitHub** | [github.com/tonyflam/nexus-402](https://github.com/tonyflam/nexus-402) |
 | **CLI Documentation** | `packages/cli/README.md` |
 | **MCP Server** | `packages/mcp-server/README.md` |
 | **Contract ABIs** | `contracts/artifacts/` |

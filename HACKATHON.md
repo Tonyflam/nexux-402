@@ -8,6 +8,7 @@
 
 [![Live](https://img.shields.io/badge/Status-LIVE%20on%20Testnet-00FF00?style=for-the-badge)](https://explorer.cronos.org/testnet)
 [![Contracts](https://img.shields.io/badge/Contracts-4%20Deployed-purple?style=for-the-badge)](https://explorer.cronos.org/testnet)
+[![Demo](https://img.shields.io/badge/Demo-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/K8bI92NpbHc)
 
 </div>
 
@@ -377,8 +378,8 @@ GET  /api/market/agent/actions - Available actions
 
 ```bash
 # Clone
-git clone https://github.com/Tonyflam/hk.git
-cd hk
+git clone https://github.com/tonyflam/nexus-402.git
+cd nexus-402
 
 # Install
 pnpm install
@@ -464,7 +465,7 @@ cd apps/frontend && pnpm dev
 
 | Resource | URL |
 |----------|-----|
-| **GitHub Repository** | [github.com/Tonyflam/hk](https://github.com/Tonyflam/hk) |
+| **GitHub Repository** | [github.com/tonyflam/nexus-402](https://github.com/tonyflam/nexus-402) |
 | **NexusRegistry** | [View on Explorer →](https://explorer.cronos.org/testnet/address/0xABA74d14F489F572ed6520950c7D2059F70F2444) |
 | **WorkflowEngine** | [View on Explorer →](https://explorer.cronos.org/testnet/address/0xd055511F2f204ea0dD1c0D69D9bF76Bc1C5D3938) |
 | **PaymentRouter** | [View on Explorer →](https://explorer.cronos.org/testnet/address/0x34096A7821a2EFE7996C1223fc9d81ACd188Ca3C) |

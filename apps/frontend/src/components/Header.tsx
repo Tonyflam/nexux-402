@@ -75,13 +75,18 @@ export function Header() {
           {/* Right side - Wallet Connect */}
           <div className="flex items-center gap-4">
             {isConnected && address ? (
-              <button 
-                onClick={disconnect}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-              >
-                <div className="w-2 h-2 bg-green-400 rounded-full" />
-                <span className="text-sm font-medium">{formatAddress(address)}</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10">
+                  <div className="w-2 h-2 bg-green-400 rounded-full" />
+                  <span className="text-sm font-medium">{formatAddress(address)}</span>
+                </div>
+                <button 
+                  onClick={disconnect}
+                  className="px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 transition-colors text-sm font-medium"
+                >
+                  Disconnect
+                </button>
+              </div>
             ) : (
               <button 
                 onClick={connect}

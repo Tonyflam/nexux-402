@@ -14,7 +14,7 @@ Thank you for your interest in contributing to NEXUS-402! 🚀
 
 ```bash
 # Clone the repository
-git clone https://github.com/Tonyflam/hk.git
+git clone https://github.com/tonyflam/nexus-402.git
 cd hk
 
 # Install dependencies

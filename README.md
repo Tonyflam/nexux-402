@@ -9,6 +9,7 @@
 [![Cronos](https://img.shields.io/badge/Cronos-002D74?style=for-the-badge&logo=cronos&logoColor=white)](https://cronos.org)
 [![x402](https://img.shields.io/badge/x402-Protocol-00A3FF?style=for-the-badge)](https://github.com/coinbase/x402)
 [![Live](https://img.shields.io/badge/Status-LIVE%20on%20Testnet-00FF00?style=for-the-badge)](https://explorer.cronos.org/testnet)
+[![Demo](https://img.shields.io/badge/Demo-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/K8bI92NpbHc)
 [![Contracts](https://img.shields.io/badge/Contracts-4%20Deployed-purple?style=for-the-badge)](https://explorer.cronos.org/testnet)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
@@ -494,8 +495,8 @@ POST /api/market/agent
 
 ```bash
 # Clone repository
-git clone https://github.com/Tonyflam/hk.git
-cd hk
+git clone https://github.com/tonyflam/nexus-402.git
+cd nexus-402
 
 # Install dependencies
 pnpm install
@@ -589,7 +590,7 @@ nexus-402/
 | **Cronos Explorer** | [View Contracts →](https://explorer.cronos.org/testnet/address/0xABA74d14F489F572ed6520950c7D2059F70F2444) |
 | **Testnet Faucet** | [Get TCRO →](https://cronos.org/faucet) |
 | **x402 Protocol** | [Coinbase x402 →](https://github.com/coinbase/x402) |
-| **GitHub Repo** | [Tonyflam/hk →](https://github.com/Tonyflam/hk) |
+| **GitHub Repo** | [tonyflam/nexus-402 →](https://github.com/tonyflam/nexus-402) |
 
 ---
 
@@ -609,6 +610,6 @@ MIT License - see [LICENSE](./LICENSE)
 
 ---
 
-[View on Explorer](https://explorer.cronos.org/testnet/address/0xABA74d14F489F572ed6520950c7D2059F70F2444) • [GitHub](https://github.com/Tonyflam/hk) • [x402 Protocol](https://github.com/coinbase/x402)
+[View on Explorer](https://explorer.cronos.org/testnet/address/0xABA74d14F489F572ed6520950c7D2059F70F2444) • [GitHub](https://github.com/tonyflam/nexus-402) • [x402 Protocol](https://github.com/coinbase/x402)
 
 </div>

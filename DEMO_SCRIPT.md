@@ -164,11 +164,13 @@ const payment = await client.payments.createX402({
 
 ## After Recording
 
-1. Upload to YouTube (unlisted or public)
-2. Submit via DoraHacks
-3. Include all links:
-   - GitHub: `https://github.com/Tonyflam/hk`
-   - Demo: YouTube link
-   - Live: If deployed
+### ✅ DEMO VIDEO UPLOADED!
+
+🎬 **YouTube Demo:** https://youtu.be/K8bI92NpbHc
+
+### Submission Links:
+- GitHub: https://github.com/tonyflam/nexus-402
+- Demo Video: https://youtu.be/K8bI92NpbHc
+- Contracts: https://explorer.cronos.org/testnet/address/0xABA74d14F489F572ed6520950c7D2059F70F2444
 
 Good luck! 🚀

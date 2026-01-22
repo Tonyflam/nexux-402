@@ -7,7 +7,7 @@
 *Enable Claude, ChatGPT, and other AI assistants to interact with the NEXUS-402 Protocol*
 
 [![MCP](https://img.shields.io/badge/MCP-Compatible-00A3FF?style=for-the-badge)](https://modelcontextprotocol.io)
-[![Tools](https://img.shields.io/badge/Tools-12+-purple?style=for-the-badge)](https://github.com/Tonyflam/hk)
+[![Tools](https://img.shields.io/badge/Tools-12+-purple?style=for-the-badge)](https://github.com/tonyflam/nexus-402)
 
 </div>
 
@@ -50,7 +50,7 @@ Add to your `claude_desktop_config.json`:
 
 ```bash
 # Clone NEXUS-402
-git clone https://github.com/Tonyflam/hk.git
+git clone https://github.com/tonyflam/nexus-402.git
 cd hk
 
 # Install dependencies
@@ -484,7 +484,7 @@ The MCP server also provides **4 resources** that AI assistants can read:
 | Resource | Link |
 |----------|------|
 | **MCP Protocol Docs** | [modelcontextprotocol.io](https://modelcontextprotocol.io) |
-| **NEXUS-402 GitHub** | [github.com/Tonyflam/hk](https://github.com/Tonyflam/hk) |
+| **NEXUS-402 GitHub** | [github.com/tonyflam/nexus-402](https://github.com/tonyflam/nexus-402) |
 | **SDK Documentation** | See `packages/sdk/README.md` |
 | **CLI Documentation** | See `packages/cli/README.md` |
 
