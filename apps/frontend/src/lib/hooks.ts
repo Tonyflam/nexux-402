@@ -105,7 +105,7 @@ export function useBlockNumber() {
   return blockNumber;
 }
 
-// Hook for wallet connection (without RainbowKit dependency)
+// Hook for wallet connection (using window.ethereum or RainbowKit)
 export function useWallet() {
   const [address, setAddress] = useState<string | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
@@ -113,7 +113,7 @@ export function useWallet() {
 
   const connect = useCallback(async () => {
     if (typeof window === 'undefined' || !window.ethereum) {
-      alert('Please install MetaMask!');
+      alert('Please install MetaMask or another Web3 wallet!');
       return;
     }
 
@@ -174,6 +174,8 @@ export function useWallet() {
 
     const handleChainChanged = (chainIdHex: string) => {
       setChainId(parseInt(chainIdHex, 16));
+      // Reload page on chain change to avoid state issues
+      window.location.reload();
     };
 
     window.ethereum?.on('accountsChanged', handleAccountsChanged);
@@ -196,10 +198,10 @@ export function useWallet() {
   }, []);
 
   return {
-    address,
-    chainId,
-    connecting,
+    address: address || null,
+    chainId: chainId || null,
     isConnected: !!address,
+    connecting,
     isCorrectChain: chainId === 338,
     connect,
     disconnect,
