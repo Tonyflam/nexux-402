@@ -31,7 +31,7 @@ const navigation = [
 export function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { address, isConnected, connect, disconnect } = useWallet();
+  const { address, isConnected, connect, disconnect, connecting } = useWallet();
 
   return (
     <header className="sticky top-0 z-50 glass border-b border-white/10">
@@ -89,11 +89,17 @@ export function Header() {
               </div>
             ) : (
               <button 
-                onClick={connect}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cronos-light to-primary-600 hover:opacity-90 transition-opacity"
+                onClick={() => {
+                  console.log('Connect button clicked in Header');
+                  connect();
+                }}
+                disabled={connecting}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cronos-light to-primary-600 hover:opacity-90 transition-opacity disabled:opacity-50"
               >
                 <Wallet className="w-4 h-4" />
-                <span className="text-sm font-medium">Connect Wallet</span>
+                <span className="text-sm font-medium">
+                  {connecting ? 'Connecting...' : 'Connect Wallet'}
+                </span>
               </button>
             )}
             

@@ -112,12 +112,16 @@ export function useWallet() {
   const [connecting, setConnecting] = useState(false);
 
   const connect = useCallback(async () => {
+    console.log('Connect button clicked!');
+    console.log('window.ethereum:', window?.ethereum);
+    
     if (typeof window === 'undefined' || !window.ethereum) {
       alert('Please install MetaMask or another Web3 wallet!');
       return;
     }
 
     setConnecting(true);
+    console.log('Requesting accounts...');
     try {
       const accounts = await window.ethereum.request({ 
         method: 'eth_requestAccounts' 
