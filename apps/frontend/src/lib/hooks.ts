@@ -117,32 +117,55 @@ export function useWallet() {
     
     if (typeof window === 'undefined' || !window.ethereum) {
       alert('Please install MetaMask or another Web3 wallet!');
+      setConnecting(false);
       return;
     }
 
     setConnecting(true);
     console.log('Requesting accounts...');
+    
     try {
-      const accounts = await window.ethereum.request({ 
+      // Add a timeout to prevent infinite hanging
+      const accountsPromise = window.ethereum.request({ 
         method: 'eth_requestAccounts' 
       });
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Connection timeout')), 30000)
+      );
+      
+      const accounts = await Promise.race([accountsPromise, timeoutPromise]) as string[];
+      
+      console.log('Accounts received:', accounts);
+      
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No accounts found');
+      }
+      
       setAddress(accounts[0]);
       
       const chainIdHex = await window.ethereum.request({ 
         method: 'eth_chainId' 
       });
-      setChainId(parseInt(chainIdHex, 16));
+      const currentChainId = parseInt(chainIdHex, 16);
+      setChainId(currentChainId);
+      
+      console.log('Current chain ID:', currentChainId);
 
       // Switch to Cronos Testnet if not on it
-      if (parseInt(chainIdHex, 16) !== 338) {
+      if (currentChainId !== 338) {
+        console.log('Switching to Cronos Testnet...');
         try {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: '0x152' }], // 338 in hex
           });
+          setChainId(338);
         } catch (switchError: any) {
+          console.log('Switch error:', switchError);
           // If chain not added, add it
           if (switchError.code === 4902) {
+            console.log('Adding Cronos Testnet...');
             await window.ethereum.request({
               method: 'wallet_addEthereumChain',
               params: [{
@@ -153,12 +176,32 @@ export function useWallet() {
                 blockExplorerUrls: ['https://explorer.cronos.org/testnet'],
               }],
             });
+            setChainId(338);
+          } else {
+            // User rejected the switch, but we can still continue
+            console.warn('User rejected network switch');
           }
         }
       }
-    } catch (error) {
+      
+      console.log('Connection successful!');
+    } catch (error: any) {
       console.error('Connection error:', error);
+      
+      // Show user-friendly error messages
+      if (error.code === 4001) {
+        alert('Connection rejected. Please approve the connection in your wallet.');
+      } else if (error.message === 'Connection timeout') {
+        alert('Connection timed out. Please try again and approve the connection in your wallet.');
+      } else {
+        alert(`Failed to connect: ${error.message || 'Unknown error'}`);
+      }
+      
+      // Reset state on error
+      setAddress(null);
+      setChainId(null);
     } finally {
+      console.log('Setting connecting to false');
       setConnecting(false);
     }
   }, []);
