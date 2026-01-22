@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "The Universal x402 Orchestration Protocol & Agent Marketplace for Cronos",
   "private": true,
+  "packageManager": "pnpm@10.28.0",
   "workspaces": [
     "packages/*",
     "apps/*",
