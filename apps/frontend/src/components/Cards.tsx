@@ -58,7 +58,7 @@ interface AgentCardProps {
     name: string;
     description?: string;
     capabilities: string[];
-    pricePerCall: string;
+    pricePerCall: number;
     rating: number;
     totalCalls: number;
     isActive: boolean;
@@ -67,8 +67,8 @@ interface AgentCardProps {
 }
 
 export function AgentCard({ agent, onClick }: AgentCardProps) {
-  const formatUSDC = (amount: string) => `$${(parseFloat(amount) / 1e6).toFixed(2)}`;
-  const formatRating = (rating: number) => (rating / 100).toFixed(1);
+  const formatUSDC = (amount: number) => `$${amount.toFixed(2)}`;
+  const formatRating = (rating: number) => rating.toFixed(1);
 
   return (
     <div 

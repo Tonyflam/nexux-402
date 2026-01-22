@@ -65,9 +65,9 @@ export default function X402DemoPage() {
 
   // Get agents to display - prefer on-chain, fallback to demo
   const displayAgents = onChainAgents.length > 0 ? onChainAgents : [
-    { id: '1', name: 'DeFi Price Oracle', description: 'Get real-time token prices', pricePerCall: '0.10' },
-    { id: '2', name: 'Sentiment Analyzer', description: 'Analyze social sentiment', pricePerCall: '0.25' },
-    { id: '3', name: 'Yield Optimizer', description: 'Find best yield opportunities', pricePerCall: '0.50' },
+    { id: '1', name: 'DeFi Price Oracle', description: 'Get real-time token prices', pricePerCall: 0.10, capabilities: ['defi'], isActive: true, totalCalls: 0, rating: 4.5, owner: '', paymentAddress: '', endpoint: '', price: '0.10', totalRevenue: 0 },
+    { id: '2', name: 'Sentiment Analyzer', description: 'Analyze social sentiment', pricePerCall: 0.25, capabilities: ['analytics'], isActive: true, totalCalls: 0, rating: 4.8, owner: '', paymentAddress: '', endpoint: '', price: '0.25', totalRevenue: 0 },
+    { id: '3', name: 'Yield Optimizer', description: 'Find best yield opportunities', pricePerCall: 0.50, capabilities: ['automation'], isActive: true, totalCalls: 0, rating: 4.7, owner: '', paymentAddress: '', endpoint: '', price: '0.50', totalRevenue: 0 },
   ];
 
   const handleApprove = async () => {
