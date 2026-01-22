@@ -11,12 +11,10 @@ import {
   BarChart3, 
   Menu,
   X,
-  Wallet,
-  Zap
+  Zap,
 } from 'lucide-react';
 import { useState } from 'react';
-import { useWallet } from '@/lib/hooks';
-import { formatAddress } from '@/lib/contracts';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -31,7 +29,6 @@ const navigation = [
 export function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { address, isConnected, connect, disconnect, connecting } = useWallet();
 
   return (
     <header className="sticky top-0 z-50 glass border-b border-white/10">
@@ -72,36 +69,12 @@ export function Header() {
             })}
           </nav>
 
-          {/* Right side - Wallet Connect */}
+          {/* Right side - RainbowKit Connect Button */}
           <div className="flex items-center gap-4">
-            {isConnected && address ? (
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10">
-                  <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-sm font-medium">{formatAddress(address)}</span>
-                </div>
-                <button 
-                  onClick={disconnect}
-                  className="px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 transition-colors text-sm font-medium"
-                >
-                  Disconnect
-                </button>
-              </div>
-            ) : (
-              <button 
-                onClick={() => {
-                  console.log('Connect button clicked in Header');
-                  connect();
-                }}
-                disabled={connecting}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cronos-light to-primary-600 hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
-                <Wallet className="w-4 h-4" />
-                <span className="text-sm font-medium">
-                  {connecting ? 'Connecting...' : 'Connect Wallet'}
-                </span>
-              </button>
-            )}
+            <ConnectButton 
+              chainStatus="icon"
+              showBalance={false}
+            />
             
             {/* Mobile menu button */}
             <button

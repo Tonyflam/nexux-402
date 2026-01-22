@@ -29,8 +29,8 @@ const REGISTERED_AGENT_IDS = [
   '0xcd33b4af32e89469ac8e8296f576d149da4b3eecff8dc23a5af8c07734c3be1a',
 ];
 
-export default function X402DemoPage() {
-  const { address, isConnected, connect } = useWallet();
+function X402DemoPage() {
+  const { address, isConnected } = useWallet();
   const { agents: onChainAgents, loading: agentsLoading } = useAgents();
   const [step, setStep] = useState<DemoStep>('connect');
   const [selectedAgent, setSelectedAgent] = useState<any | null>(null);
@@ -45,18 +45,6 @@ export default function X402DemoPage() {
       setStep('select');
     }
   }, [isConnected, step]);
-
-  const handleConnect = async () => {
-    setLoading(true);
-    try {
-      await connect();
-      setStep('select');
-    } catch (error) {
-      console.error('Failed to connect:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSelectAgent = (agent: any) => {
     setSelectedAgent(agent);
@@ -228,19 +216,11 @@ export default function X402DemoPage() {
               </div>
               <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
               <p className="text-white/60 mb-8 max-w-md mx-auto">
-                Connect your wallet to the Cronos Testnet to start using x402 payments.
+                Connect your wallet using the button in the top right corner to start using x402 payments.
               </p>
-              <button 
-                onClick={handleConnect}
-                disabled={loading}
-                className="btn-primary flex items-center gap-2 mx-auto"
-              >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>Connect Wallet <ArrowRight className="w-4 h-4" /></>
-                )}
-              </button>
+              <p className="text-sm text-cronos-light">
+                👆 Click "Connect Wallet" in the header above
+              </p>
             </div>
           )}
 
@@ -504,3 +484,5 @@ export default function X402DemoPage() {
     </div>
   );
 }
+
+export default X402DemoPage;
