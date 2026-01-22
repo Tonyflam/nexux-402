@@ -225,11 +225,13 @@ export function useAgents() {
     name: string;
     description: string;
     owner: string;
+    paymentAddress: string;
     endpoint: string;
     capabilities: string[];
-    pricePerCall: string;
+    pricePerCall: number;
     price: string; // Alias for convenience
     totalCalls: number;
+    totalRevenue: number;
     rating: number;
     isActive: boolean;
   }>>([]);
@@ -290,12 +292,14 @@ export function useAgents() {
                 name: metadata.name || 'Unknown Agent',
                 description: metadata.description || '',
                 owner: agent.owner,
+                paymentAddress: agent.paymentAddress,
                 endpoint: metadata.endpoint || '',
                 capabilities: agent.capabilities || [],
-                pricePerCall: priceFormatted,
+                pricePerCall: Number(priceFormatted),
                 price: priceFormatted, // Alias for convenience
                 totalCalls: Number(agent.totalCalls),
-                rating: Number(agent.rating),
+                totalRevenue: Number(ethers.formatUnits(agent.totalRevenue, 6)),
+                rating: Number(agent.rating) / 100, // Rating is stored as 0-500, display as 0-5.0
                 isActive: agent.isActive,
               };
             });

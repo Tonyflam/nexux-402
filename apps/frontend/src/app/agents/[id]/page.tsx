@@ -123,7 +123,7 @@ export default function AgentDetailPage() {
               <DollarSign className="w-4 h-4" />
               <span className="text-sm">Price per Call</span>
             </div>
-            <p className="text-2xl font-bold">${(agent.pricePerCall / 1_000_000).toFixed(2)}</p>
+            <p className="text-2xl font-bold">${agent.pricePerCall.toFixed(2)}</p>
             <p className="text-xs text-white/50">USDC</p>
           </div>
           
@@ -150,7 +150,7 @@ export default function AgentDetailPage() {
               <Shield className="w-4 h-4" />
               <span className="text-sm">Revenue</span>
             </div>
-            <p className="text-2xl font-bold">${(agent.totalRevenue / 1_000_000).toFixed(2)}</p>
+            <p className="text-2xl font-bold">${agent.totalRevenue.toFixed(2)}</p>
             <p className="text-xs text-white/50">earned</p>
           </div>
         </div>
