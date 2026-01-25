@@ -51,7 +51,7 @@ Add to your `claude_desktop_config.json`:
 ```bash
 # Clone NEXUS-402
 git clone https://github.com/tonyflam/nexus-402.git
-cd hk
+cd nexux-402
 
 # Install dependencies
 pnpm install
